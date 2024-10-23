@@ -86,7 +86,7 @@ for epoch in range(num_epochs):
     print(f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss / len(dataloader)}")
 
 # Identificar anomalias
-def detect_anomalies(model, df, threshold=0.1):
+def detect_anomalies(model, df, threshold=0.5):
     model.eval()
     X_i, X_j = create_pairs(df)
     h_i, h_j = model(X_i.unsqueeze(-1), X_j.unsqueeze(-1))
