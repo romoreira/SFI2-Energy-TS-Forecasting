@@ -73,8 +73,9 @@ encoder = TimeSeriesEncoder(input_dim=1, hidden_dim=16)  # 1 feature de entrada 
 model = ContrastiveModel(encoder)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-# Loop de treinamento
 num_epochs = 10
+epoch_losses = []
+
 for epoch in range(num_epochs):
     model.train()
     epoch_loss = 0.0
@@ -85,8 +86,18 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
         epoch_loss += loss.item()
+    avg_epoch_loss = epoch_loss / len(dataloader)
+    epoch_losses.append(avg_epoch_loss)
+    print(f"Epoch {epoch+1}/{num_epochs}, Loss: {avg_epoch_loss}")
 
-    print(f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss / len(dataloader)}")
+# Plotar o gráfico de perda (loss) ao longo das épocas
+plt.figure()
+plt.plot(range(1, num_epochs + 1), epoch_losses, label="Loss")
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Loss Over Epochs')
+plt.legend()
+plt.savefig('loss_over_epochs.png')
 
 # Identificar anomalias
 def detect_anomalies(model, df, threshold=0.5):
@@ -127,11 +138,16 @@ def detect_anomalies_with_threshold(model, df, threshold):
     anomalies = distances > threshold
     return anomalies, distances
 
+# Criar listas para armazenar os thresholds e as perdas (losses)
+thresholds = []
+losses = []
+
 # Função objetivo para otimização
 def objective(threshold):
     _, distances = detect_anomalies_with_threshold(model, df, threshold)
-    # Usar uma métrica baseada nas distâncias, como a média
     score = np.mean(distances > threshold)
+    thresholds.append(threshold)  # Salvar o threshold atual
+    losses.append(-score)  # Salvar a perda correspondente
     return -score  # Minimizar o número de falsos positivos
 
 # Definindo os limites de threshold
@@ -140,7 +156,6 @@ ub = [2.0]  # Ajuste conforme necessário
 
 # Executando o PSO
 best_threshold, best_loss = pso(objective, lb, ub, swarmsize=50, maxiter=100)
-
 print(f"Best threshold: {best_threshold}")
 print(f"Best loss (negative score): {best_loss}")
 
@@ -149,6 +164,7 @@ anomalies, _ = detect_anomalies_with_threshold(model, df, best_threshold)
 print(f"Anomalies detected with optimized threshold: {anomalies.sum().item()}")
 
 # Plotar o gráfico de corrente com anomalias marcadas
+anomalies = torch.tensor(anomalies)
 anomaly_indices = torch.nonzero(anomalies).flatten().cpu().numpy()
 df['index'] = range(0, len(df))
 plt.figure()
@@ -158,3 +174,24 @@ plt.xlabel('Time Index')
 plt.ylabel('Corriente')
 plt.legend()
 plt.savefig('anomaly_plot_with_optimization.png')
+
+# Supondo que você tenha listas de thresholds e losses coletadas durante as iterações do PSO
+iterations = list(range(1, len(losses) + 1))
+
+plt.figure()
+plt.plot(iterations, losses, label="Loss (Negative Score)")
+plt.xlabel('Iterations')
+plt.ylabel('Loss (Negative Score)')
+plt.title('Loss vs. Iterations')
+plt.legend()
+plt.savefig('loss_vs_iterations.png')
+
+plt.figure()
+plt.plot(thresholds, losses, label="Loss (Negative Score)")
+plt.xlabel('Threshold')
+plt.ylabel('Loss (Negative Score)')
+plt.title('Threshold vs. Loss')
+plt.legend()
+plt.savefig('threshold_vs_loss.png')
+
+
