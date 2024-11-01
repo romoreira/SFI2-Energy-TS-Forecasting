@@ -77,6 +77,7 @@ model = ContrastiveModel(encoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 
+
 num_epochs = 30
 epoch_losses = []
 
@@ -94,6 +95,7 @@ for epoch in range(num_epochs):
     avg_epoch_loss = epoch_loss / len(dataloader)
     epoch_losses.append(avg_epoch_loss)
     print(f"Epoch {epoch+1}/{num_epochs}, Loss: {avg_epoch_loss}")
+
 
 
 
