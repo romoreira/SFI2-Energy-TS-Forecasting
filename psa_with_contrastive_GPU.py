@@ -48,9 +48,11 @@ def contrastive_loss(h_i, h_j, temperature=0.5):
 #---------------------------------#
 
 # Leitura e pré-processamento do CSV
-df = read_csv("dataset/maio.csv")
+df_may = read_csv("dataset/maio.csv")
+df_august = read_csv("dataset/agosto.csv", skiprows=1)
+df = pd.concat([df_may, df_august], ignore_index=True)
 df = df.drop(columns=['fecha_esp32', 'weekday', 'MAC'])
-df = df.head(1000)  # Usar apenas um subconjunto para treinamento
+#df = df.head(1000)  # Usar apenas um subconjunto para treinamento
 
 # Normalizar a feature 'corriente'
 scaler = StandardScaler()
@@ -106,7 +108,7 @@ plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.title('Loss Over Epochs')
 plt.legend()
-plt.savefig('loss_over_epochs.png')
+plt.savefig('loss_over_epochs.pdf')
 
 # Identificar anomalias
 def detect_anomalies(model, df, threshold=0.5):
@@ -137,7 +139,7 @@ plt.scatter(df['index'][anomaly_indices], df['corriente'][anomaly_indices], colo
 plt.xlabel('Time Index')
 plt.ylabel('Corriente')
 plt.legend()
-plt.savefig('anomaly_plot_without_optimization.png')
+plt.savefig('anomaly_plot_without_optimization.pdf')
 
 
 # Função para detectar anomalias com sensibilidade controlada
@@ -188,7 +190,7 @@ plt.scatter(df['index'][anomaly_indices], df['corriente'][anomaly_indices], colo
 plt.xlabel('Time Index')
 plt.ylabel('Corriente')
 plt.legend()
-plt.savefig('anomaly_plot_with_optimization.png')
+plt.savefig('anomaly_plot_with_optimization.pdf')
 
 # Supondo que você tenha listas de thresholds e losses coletadas durante as iterações do PSO
 iterations = list(range(1, len(losses) + 1))
@@ -199,7 +201,7 @@ plt.xlabel('Iterations')
 plt.ylabel('Loss (Negative Score)')
 plt.title('Loss vs. Iterations')
 plt.legend()
-plt.savefig('loss_vs_iterations.png')
+plt.savefig('loss_vs_iterations.pdf')
 
 plt.figure()
 plt.plot(thresholds, losses, label="Loss (Negative Score)")
@@ -207,6 +209,6 @@ plt.xlabel('Threshold')
 plt.ylabel('Loss (Negative Score)')
 plt.title('Threshold vs. Loss')
 plt.legend()
-plt.savefig('threshold_vs_loss.png')
+plt.savefig('threshold_vs_loss.pdf')
 
 
