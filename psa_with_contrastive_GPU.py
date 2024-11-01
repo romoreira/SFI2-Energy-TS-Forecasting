@@ -72,11 +72,12 @@ dataset = TensorDataset(X_i, X_j)
 dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
 # Definir modelo e otimizador
-encoder = TimeSeriesEncoder(input_dim=1, hidden_dim=16)  # 1 feature de entrada (corriente)
-model = ContrastiveModel(encoder)
+encoder = TimeSeriesEncoder(input_dim=1, hidden_dim=16).to(device)
+model = ContrastiveModel(encoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-num_epochs = 10
+
+num_epochs = 30
 epoch_losses = []
 
 for epoch in range(num_epochs):
@@ -93,6 +94,7 @@ for epoch in range(num_epochs):
     avg_epoch_loss = epoch_loss / len(dataloader)
     epoch_losses.append(avg_epoch_loss)
     print(f"Epoch {epoch+1}/{num_epochs}, Loss: {avg_epoch_loss}")
+
 
 
 # Plotar o gráfico de perda (loss) ao longo das épocas
@@ -113,6 +115,7 @@ def detect_anomalies(model, df, threshold=0.5):
     distances = torch.norm(h_i - h_j, dim=1)
     anomalies = distances > threshold
     return anomalies
+
 
 # Detectar anomalias
 anomalies = detect_anomalies(model, df)
