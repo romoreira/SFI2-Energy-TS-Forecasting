@@ -46,8 +46,8 @@ def contrastive_loss(h_i, h_j, temperature=0.5):
 #---------------------------------#
 
 # Leitura e pré-processamento do CSV
-df_may = pd.read_csv("dataset/maio.csv")
-df_august = pd.read_csv("dataset/agosto.csv", skiprows=1, on_bad_lines='warn')
+df_may = pd.read_csv("dataset/may.csv")
+df_august = pd.read_csv("dataset/august.csv", skiprows=1, on_bad_lines='warn')
 df = pd.concat([df_may, df_august], ignore_index=True)
 df = df.drop(columns=['fecha_esp32', 'weekday', 'MAC'])
 
