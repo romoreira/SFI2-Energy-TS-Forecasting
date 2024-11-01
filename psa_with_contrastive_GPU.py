@@ -144,10 +144,12 @@ plt.savefig('anomaly_plot_without_optimization.png')
 def detect_anomalies_with_threshold(model, df, threshold):
     model.eval()
     X_i, X_j = create_pairs(df)
+    X_i, X_j = X_i.to(device), X_j.to(device)
     h_i, h_j = model(X_i.unsqueeze(-1), X_j.unsqueeze(-1))
     distances = torch.norm(h_i - h_j, dim=1).detach().cpu().numpy()
     anomalies = distances > threshold
     return anomalies, distances
+
 
 # Criar listas para armazenar os thresholds e as perdas (losses)
 thresholds = []
@@ -156,10 +158,11 @@ losses = []
 # Função objetivo para otimização
 def objective(threshold):
     _, distances = detect_anomalies_with_threshold(model, df, threshold)
-    score = np.mean(distances.cpu().numpy() > threshold)  # Certifique-se de mover para a CPU ao calcular a média
+    score = np.mean(distances > threshold)
     thresholds.append(threshold)  # Salvar o threshold atual
     losses.append(-score)  # Salvar a perda correspondente
     return -score  # Minimizar o número de falsos positivos
+
 
 
 # Definindo os limites de threshold
