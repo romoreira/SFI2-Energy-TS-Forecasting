@@ -53,7 +53,7 @@ df_may = pd.read_csv("dataset/august.csv")
 #df = pd.concat([df_may, df_august], ignore_index=True)
 df = df_may.drop(columns=['fecha_esp32', 'weekday', 'MAC'])
 
-#df = df.head(1000)  # Usar apenas um subconjunto para treinamento
+df = df.head(1000)  # Usar apenas um subconjunto para treinamento
 
 # Normalizar a feature 'corriente'
 scaler = StandardScaler()
