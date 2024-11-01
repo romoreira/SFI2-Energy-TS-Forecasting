@@ -48,10 +48,11 @@ def contrastive_loss(h_i, h_j, temperature=0.5):
 #---------------------------------#
 
 # Leitura e pré-processamento do CSV
-df_may = read_csv("dataset/maio.csv")
-df_august = read_csv("dataset/agosto.csv", skiprows=1, warn_bad_lines=False)
+df_may = pd.read_csv("dataset/maio.csv")
+df_august = pd.read_csv("dataset/agosto.csv", skiprows=1, on_bad_lines='warn')
 df = pd.concat([df_may, df_august], ignore_index=True)
 df = df.drop(columns=['fecha_esp32', 'weekday', 'MAC'])
+
 #df = df.head(1000)  # Usar apenas um subconjunto para treinamento
 
 # Normalizar a feature 'corriente'
