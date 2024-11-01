@@ -68,8 +68,10 @@ def create_pairs(df, window_size=10):
     return torch.tensor(X_i, dtype=torch.float32), torch.tensor(X_j, dtype=torch.float32)
 
 # Criar os pares
+print("==Creating pairs...===")
 X_i, X_j = create_pairs(df)
 
+print("==Creating DataLoader...===")
 # Definir DataLoader para o treinamento
 dataset = TensorDataset(X_i, X_j)
 dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
